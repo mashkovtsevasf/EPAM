@@ -46,4 +46,7 @@ Linting
 
 Linting runs automatically when you start the development server with npm run dev. The linting process checks JavaScript and SCSS files before compiling and starting the server.
 
+## Checklist Progress
+
+64 out of 64 points achieved.
 
