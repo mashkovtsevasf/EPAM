@@ -66,8 +66,8 @@
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  width: 10px;
-  height: 6px;
+  width: $icon-arrow-width;
+  height: $icon-arrow-height;
   display: block;
   z-index: 1;
   flex-shrink: 0;
@@ -219,16 +219,14 @@
 }
 
 .catalog__filter-select-icon {
-  width: 10px;
-  height: 6px;
+  width: $icon-arrow-width;
+  height: $icon-arrow-height;
   flex-shrink: 0;
   position: absolute;
   right: 14px;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  width: 12px;
-  height: 12px;
 }
 
 .catalog__filter-checkbox {

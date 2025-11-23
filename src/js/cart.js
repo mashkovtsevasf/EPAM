@@ -23,7 +23,7 @@ function renderCartItems() {
   cartItemsContainer.innerHTML = cartItems.map(item => {
     const total = item.price * item.quantity;
     let imagePath = item.image;
-    if (imagePath && imagePath.startsWith('assets/') && !imagePath.startsWith(basePath)) {
+    if (imagePath?.startsWith('assets/') && !imagePath?.startsWith(basePath)) {
       imagePath = `${basePath}${imagePath}`;
     }
     

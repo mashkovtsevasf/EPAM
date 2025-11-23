@@ -218,65 +218,85 @@ function updateReviewsHeading(product) {
 }
 
 // Product options
+function parseSizes(sizeString) {
+  const sizes = [];
+  if (sizeString.includes(',')) {
+    sizeString.split(',').forEach(s => sizes.push(s.trim()));
+  } else if (sizeString.includes('-')) {
+    const [start, end] = sizeString.split('-');
+    const sizeOrder = ['S', 'M', 'L', 'XL'];
+    const startIdx = sizeOrder.indexOf(start.trim());
+    const endIdx = sizeOrder.indexOf(end.trim());
+    if (startIdx !== -1 && endIdx !== -1) {
+      for (let i = startIdx; i <= endIdx; i++) {
+        sizes.push(sizeOrder[i]);
+      }
+    }
+  } else {
+    sizes.push(sizeString.trim());
+  }
+  return sizes;
+}
+
+function sortSizes(sizes) {
+  const sizeOrder = ['S', 'M', 'L', 'XL'];
+  const sizesCopy = [...sizes];
+  return sizesCopy.sort((a, b) => {
+    const aIdx = sizeOrder.indexOf(a);
+    const bIdx = sizeOrder.indexOf(b);
+    return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
+  });
+}
+
+function populateSizeSelect(sizeSelect, product) {
+  if (!sizeSelect || !product?.size) return;
+  
+  sizeSelect.innerHTML = '<option value="">Choose option</option>';
+  const sizes = parseSizes(product.size);
+  const sortedSizes = sortSizes(sizes);
+  
+  sortedSizes.forEach(size => {
+    const option = document.createElement('option');
+    option.value = size;
+    option.textContent = size;
+      if (size === product.size || (product.size && product.size.includes(size))) {
+      option.selected = true;
+    }
+    sizeSelect.appendChild(option);
+  });
+}
+
+function populateColorSelect(colorSelect, product) {
+  if (!colorSelect || !product?.color) return;
+  
+  colorSelect.innerHTML = '<option value="">Choose option</option>';
+  const option = document.createElement('option');
+  option.value = product.color;
+  option.textContent = product.color.charAt(0).toUpperCase() + product.color.slice(1);
+  option.selected = true;
+  colorSelect.appendChild(option);
+}
+
+function populateCategorySelect(categorySelect, product) {
+  if (!categorySelect || !product?.category) return;
+  
+  categorySelect.innerHTML = '<option value="">Choose option</option>';
+  const option = document.createElement('option');
+  option.value = product.category;
+  option.textContent = product.category.charAt(0).toUpperCase() + product.category.slice(1);
+  option.selected = true;
+  categorySelect.appendChild(option);
+}
+
 function populateOptions(product) {
   const sizeSelect = document.getElementById('product-size');
-  if (sizeSelect && product.size) {
-    sizeSelect.innerHTML = '<option value="">Choose option</option>';
-    
-    const sizes = [];
-    if (product.size.includes(',')) {
-      product.size.split(',').forEach(s => sizes.push(s.trim()));
-    } else if (product.size.includes('-')) {
-      const [start, end] = product.size.split('-');
-      const sizeOrder = ['S', 'M', 'L', 'XL'];
-      const startIdx = sizeOrder.indexOf(start.trim());
-      const endIdx = sizeOrder.indexOf(end.trim());
-      if (startIdx !== -1 && endIdx !== -1) {
-        for (let i = startIdx; i <= endIdx; i++) {
-          sizes.push(sizeOrder[i]);
-        }
-      }
-    } else {
-      sizes.push(product.size.trim());
-    }
-    
-    const sizeOrder = ['S', 'M', 'L', 'XL'];
-    const sortedSizes = sizes.sort((a, b) => {
-      const aIdx = sizeOrder.indexOf(a);
-      const bIdx = sizeOrder.indexOf(b);
-      return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
-    });
-    
-    sortedSizes.forEach(size => {
-      const option = document.createElement('option');
-      option.value = size;
-      option.textContent = size;
-      if (size === product.size || (product.size && product.size.includes(size))) {
-        option.selected = true;
-      }
-      sizeSelect.appendChild(option);
-    });
-  }
+  populateSizeSelect(sizeSelect, product);
 
   const colorSelect = document.getElementById('product-color');
-  if (colorSelect && product.color) {
-    colorSelect.innerHTML = '<option value="">Choose option</option>';
-    const option = document.createElement('option');
-    option.value = product.color;
-    option.textContent = product.color.charAt(0).toUpperCase() + product.color.slice(1);
-    option.selected = true;
-    colorSelect.appendChild(option);
-  }
+  populateColorSelect(colorSelect, product);
 
   const categorySelect = document.getElementById('product-category');
-  if (categorySelect && product.category) {
-    categorySelect.innerHTML = '<option value="">Choose option</option>';
-    const option = document.createElement('option');
-    option.value = product.category;
-    option.textContent = product.category.charAt(0).toUpperCase() + product.category.slice(1);
-    option.selected = true;
-    categorySelect.appendChild(option);
-  }
+  populateCategorySelect(categorySelect, product);
 }
 
 async function initProductPage() {
@@ -359,12 +379,8 @@ function switchTab(tabName) {
 
   const selectedHeader = document.querySelector(`[data-tab="${tabName}"]`);
   const selectedPanel = document.getElementById(`tab-${tabName}`);
-  if (selectedHeader) {
-    selectedHeader.classList.add('product-details__tab-header--active');
-  }
-  if (selectedPanel) {
-    selectedPanel.classList.add('product-details__tab-panel--active');
-  }
+  selectedHeader?.classList.add('product-details__tab-header--active');
+  selectedPanel?.classList.add('product-details__tab-panel--active');
 }
 
 function handleReviewSubmit() {
@@ -374,21 +390,21 @@ function handleReviewSubmit() {
   if (!reviewForm || !messageDiv) return;
 
   const formData = new FormData(reviewForm);
-  const name = formData.get('name');
-  const email = formData.get('email');
-  const comment = formData.get('comment');
+  const name = formData.get('name') || '';
+  const email = formData.get('email') || '';
+  const comment = formData.get('comment') || '';
 
-  const selectedRating = parseInt(reviewForm.dataset.selectedRating) || 0;
+  const selectedRating = parseInt(reviewForm?.dataset?.selectedRating) || 0;
 
   messageDiv.textContent = '';
   messageDiv.className = 'product-details__review-message';
 
-  if (!name || !name.trim()) {
+  if (!name?.trim()) {
     showReviewMessage('Please enter your name.', 'error');
     return;
   }
 
-  if (!email || !email.trim()) {
+  if (!email?.trim()) {
     showReviewMessage('Please enter your email address.', 'error');
     return;
   }
@@ -399,7 +415,7 @@ function handleReviewSubmit() {
     return;
   }
 
-  if (!comment || !comment.trim()) {
+  if (!comment?.trim()) {
     showReviewMessage('Please enter your review.', 'error');
     return;
   }
@@ -470,13 +486,13 @@ function addReviewToList(name, rating, comment) {
   `;
   
   const heading = reviewsList.querySelector('.product-details__reviews-heading');
-  if (heading && heading.nextSibling) {
+  if (heading?.nextSibling) {
     reviewsList.insertBefore(reviewItem, heading.nextSibling);
   } else {
     reviewsList.appendChild(reviewItem);
   }
   
-  if (window.currentProduct && window.currentProduct.id) {
+  if (window.currentProduct?.id) {
     saveReviewToStorage(window.currentProduct.id, {
       name: name,
       rating: rating,
@@ -517,9 +533,9 @@ function loadSavedReviews(productId) {
   const yellowStarPath = `${basePath}assets/images/icons/rating-yellow-star.svg`;
   const greyStarPath = `${basePath}assets/images/icons/rating-greyStar.svg`;
   
-  const heading = reviewsList.querySelector('.product-details__reviews-heading');
+  const heading = reviewsList?.querySelector('.product-details__reviews-heading');
   reviews.forEach(review => {
-    const initials = review.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    const initials = review?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '';
 
     const roundedRating = Math.round(review.rating);
     const starsHTML = Array.from({ length: 5 }, (_, i) => {
@@ -538,24 +554,24 @@ function loadSavedReviews(productId) {
             <span>${initials}</span>
           </div>
           <div class="product-details__review-author-info">
-            <span class="product-details__review-name">${review.name}</span>
-            <span class="product-details__review-date">/ ${review.date}</span>
+            <span class="product-details__review-name">${review?.name || ''}</span>
+            <span class="product-details__review-date">/ ${review?.date || ''}</span>
           </div>
         </div>
         <div class="product-details__review-rating">
           ${starsHTML}
         </div>
       </div>
-      <p class="product-details__review-text">${review.comment}</p>
+      <p class="product-details__review-text">${review?.comment || ''}</p>
     `;
     
-    const hardcodedReview = reviewsList.querySelector('.product-details__review-item--hardcoded');
+    const hardcodedReview = reviewsList?.querySelector('.product-details__review-item--hardcoded');
     if (hardcodedReview) {
       reviewsList.insertBefore(reviewItem, hardcodedReview);
-    } else if (heading && heading.nextSibling) {
+    } else if (heading?.nextSibling) {
       reviewsList.insertBefore(reviewItem, heading.nextSibling);
     } else {
-      reviewsList.appendChild(reviewItem);
+      reviewsList?.appendChild(reviewItem);
     }
   });
   
@@ -569,7 +585,7 @@ function updateProductRating() {
   
   const ratings = [];
 
-  if (window.currentProduct && window.currentProduct.rating) {
+  if (window.currentProduct?.rating) {
     ratings.push(window.currentProduct.rating);
   }
 
@@ -750,9 +766,9 @@ function renderRelatedProducts(products) {
       relatedGrid.style.display = 'grid';
       if (relatedSlider) relatedSlider.style.display = 'none';
     }
-  } else {
-    if (relatedSlider) {
-      new RelatedProductsSlider(relatedSlider, products);
+  } else if (relatedSlider) {
+    const slider = new RelatedProductsSlider(relatedSlider, products);
+    if (slider) {
       relatedSlider.style.display = 'block';
       if (relatedGrid) relatedGrid.style.display = 'none';
     }
@@ -790,25 +806,15 @@ class RelatedProductsSlider {
     const allProducts = [...this.products, ...this.products, ...this.products];
     this.currentIndex = this.products.length;
     
-    function renderProductCard(product) {
-      const imageUrl = getProductImageUrl(product);
-      const saleBadge = product.salesStatus ? '<div class="product-card__tag">SALE</div>' : '';
-      return `
-        <a href="product-card.html?id=${product.id}" class="product-card" style="text-decoration: none; color: inherit;">
-          <div class="product-card__image-wrapper">
-            ${saleBadge}
-            <img src="${imageUrl}" alt="${product.name}" class="product-card__image">
-          </div>
-          <div class="product-card__content">
-            <h3 class="product-card__name">${product.name}</h3>
-            <div class="product-card__price">$${product.price}</div>
-            <button class="product-card__btn btn btn--primary" data-product-id="${product.id}" onclick="event.preventDefault(); event.stopPropagation();">Add to Cart</button>
-          </div>
-        </a>
-      `;
-    }
-    
-    this.container.innerHTML = `
+    this.container.innerHTML = this.buildSliderHTML(allProducts);
+    this.attachEventListeners();
+    this.updateSlider();
+    this.attachAddToCartListeners();
+  }
+
+  buildSliderHTML(allProducts) {
+    const cardsHTML = allProducts.map(product => this.renderProductCard(product)).join('');
+    return `
       <div class="product-details__related-slider-wrapper">
         <button class="slider-arrow slider-arrow--left" aria-label="Previous">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -817,7 +823,7 @@ class RelatedProductsSlider {
         </button>
         <div class="product-details__related-slider-container">
           <div class="product-details__related-slider-track">
-            ${allProducts.map((product) => renderProductCard(product)).join('')}
+            ${cardsHTML}
           </div>
         </div>
         <button class="slider-arrow slider-arrow--right" aria-label="Next">
@@ -827,27 +833,42 @@ class RelatedProductsSlider {
         </button>
       </div>
     `;
+  }
 
-    this.attachEventListeners();
-    this.updateSlider();
-    
-    setTimeout(() => {
-      this.container.querySelectorAll('.product-card__btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const productId = btn.getAttribute('data-product-id');
-          if (productId && typeof addToCart === 'function') {
-            const originalText = btn.textContent;
-            await addToCart(productId, 1);
-            btn.textContent = 'Added';
-            setTimeout(() => {
-              btn.textContent = originalText;
-            }, 2000);
-          }
-        });
+  renderProductCard(product) {
+    const imageUrl = getProductImageUrl(product);
+    const saleBadge = product.salesStatus ? '<div class="product-card__tag">SALE</div>' : '';
+    return `
+      <a href="product-card.html?id=${product.id}" class="product-card" style="text-decoration: none; color: inherit;">
+        <div class="product-card__image-wrapper">
+          ${saleBadge}
+          <img src="${imageUrl}" alt="${product.name}" class="product-card__image">
+        </div>
+        <div class="product-card__content">
+          <h3 class="product-card__name">${product.name}</h3>
+          <div class="product-card__price">$${product.price}</div>
+          <button class="product-card__btn btn btn--primary" data-product-id="${product.id}" onclick="event.preventDefault(); event.stopPropagation();">Add to Cart</button>
+        </div>
+      </a>
+    `;
+  }
+
+  attachAddToCartListeners() {
+    this.container.querySelectorAll('.product-card__btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const productId = btn.getAttribute('data-product-id');
+        if (productId && typeof addToCart === 'function') {
+          const originalText = btn.textContent;
+          await addToCart(productId, 1);
+          btn.textContent = 'Added';
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 2000);
+        }
       });
-    }, 100);
+    });
   }
 
   attachEventListeners() {
@@ -900,13 +921,13 @@ class RelatedProductsSlider {
   updateSlider() {
     const track = this.container.querySelector('.product-details__related-slider-track');
     if (track) {
-      let cardWidth = 296;
-      let gap = 30;
+      let cardWidth;
+      let gap;
       
       if (window.innerWidth <= 768) {
         cardWidth = 250;
         gap = 20;
-      } else if (window.innerWidth <= 1024) {
+      } else {
         cardWidth = 296;
         gap = 30;
       }

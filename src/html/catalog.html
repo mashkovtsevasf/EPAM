@@ -42,7 +42,7 @@
         <div class="catalog__filters-panel" id="filters-panel" style="display: none;">
           <div class="catalog__filters-content">
             <div class="catalog__filter-group">
-              <label class="catalog__filter-label">Size</label>
+              <label class="catalog__filter-label" for="filter-size">Size</label>
               <div class="catalog__filter-select-wrapper">
                 <select name="size" class="catalog__filter-select" id="filter-size">
                   <option value="">Choose option</option>
@@ -59,7 +59,7 @@
               </div>
             </div>
             <div class="catalog__filter-group">
-              <label class="catalog__filter-label">Color</label>
+              <label class="catalog__filter-label" for="filter-color">Color</label>
               <div class="catalog__filter-select-wrapper">
                 <select name="color" class="catalog__filter-select" id="filter-color">
                   <option value="">Choose option</option>
@@ -77,7 +77,7 @@
               </div>
             </div>
             <div class="catalog__filter-group">
-              <label class="catalog__filter-label">Category</label>
+              <label class="catalog__filter-label" for="filter-category">Category</label>
               <div class="catalog__filter-select-wrapper">
                 <select name="category" class="catalog__filter-select" id="filter-category">
                   <option value="">Choose option</option>
@@ -92,9 +92,9 @@
               </div>
             </div>
             <div class="catalog__filter-group catalog__filter-group--sales">
-              <label class="catalog__filter-label">Sales</label>
-              <label class="catalog__filter-checkbox">
-                <input type="checkbox" name="salesStatus" value="true" class="filter-checkbox">
+              <span class="catalog__filter-label">Sales</span>
+              <label class="catalog__filter-checkbox" for="filter-sales">
+                <input type="checkbox" name="salesStatus" id="filter-sales" value="true" class="filter-checkbox">
                 <span>On Sale</span>
               </label>
             </div>
@@ -105,7 +105,7 @@
           </div>
         </div>
 
-        <aside class="catalog__sidebar catalog__sidebar--top">
+        <aside class="catalog__sidebar catalog__sidebar--top" aria-label="Top Best Sets">
           <h3 class="catalog__sidebar-title">Top Best Sets</h3>
           <div class="catalog__sets" id="top-sets-top">
             <!-- Top sets will be loaded here -->
@@ -122,7 +122,7 @@
             </div>
           </div>
 
-          <aside class="catalog__sidebar">
+          <aside class="catalog__sidebar" aria-label="Top Best Sets">
             <h3 class="catalog__sidebar-title">Top Best Sets</h3>
             <div class="catalog__sets" id="top-sets">
               <!-- Top sets will be loaded here -->

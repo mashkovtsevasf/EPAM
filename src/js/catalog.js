@@ -82,6 +82,53 @@ function renderProductCard(product) {
 }
 
 // Filtering and sorting
+function parseSizeString(sizeString) {
+  if (sizeString.includes(',')) {
+    return sizeString.split(',').map(s => s.trim());
+  }
+  if (sizeString.includes('-')) {
+    const [start, end] = sizeString.split('-');
+    const sizeOrder = ['S', 'M', 'L', 'XL'];
+    const startIndex = sizeOrder.indexOf(start);
+    const endIndex = sizeOrder.indexOf(end);
+    if (startIndex !== -1 && endIndex !== -1) {
+      return sizeOrder.slice(startIndex, endIndex + 1);
+    }
+  }
+  return [sizeString];
+}
+
+function matchesSizeFilter(productSize, selectedSize) {
+  if (productSize === selectedSize) {
+    return true;
+  }
+  
+  if (selectedSize === 'S-L') {
+    const productSizes = parseSizeString(productSize);
+    return productSizes.some(size => ['S', 'M', 'L'].includes(size));
+  }
+  
+  if (selectedSize === 'S, M, XL') {
+    const selectedSizes = ['S', 'M', 'XL'];
+    const productSizes = parseSizeString(productSize);
+    return selectedSizes.every(size => productSizes.includes(size));
+  }
+  
+  if (productSize.includes(',')) {
+    const productSizes = parseSizeString(productSize);
+    return productSizes.includes(selectedSize);
+  }
+  
+  if (productSize.includes('-') && productSize !== selectedSize) {
+    const productSizes = parseSizeString(productSize);
+    const sizeOrder = ['S', 'M', 'L', 'XL'];
+    const selectedIndex = sizeOrder.indexOf(selectedSize);
+    return selectedIndex !== -1 && productSizes.includes(selectedSize);
+  }
+  
+  return false;
+}
+
 function applyFilters() {
   filteredProducts = [...allProducts];
   
@@ -116,57 +163,7 @@ function applyFilters() {
   }
   
   if (selectedSize) {
-    filteredProducts = filteredProducts.filter(product => {
-      if (product.size === selectedSize) {
-        return true;
-      }
-      
-      if (selectedSize === 'S-L') {
-        const productSizes = product.size.includes(',') 
-          ? product.size.split(',').map(s => s.trim())
-          : [product.size];
-        return productSizes.some(size => ['S', 'M', 'L'].includes(size));
-      }
-      
-      if (selectedSize === 'S, M, XL') {
-        const selectedSizes = ['S', 'M', 'XL'];
-        let productSizes = [];
-        if (product.size.includes(',')) {
-          productSizes = product.size.split(',').map(s => s.trim());
-        } else if (product.size.includes('-')) {
-          const [start, end] = product.size.split('-');
-          const sizeOrder = ['S', 'M', 'L', 'XL'];
-          const startIndex = sizeOrder.indexOf(start);
-          const endIndex = sizeOrder.indexOf(end);
-          if (startIndex !== -1 && endIndex !== -1) {
-            productSizes = sizeOrder.slice(startIndex, endIndex + 1);
-          } else {
-            productSizes = [product.size];
-          }
-        } else {
-          productSizes = [product.size];
-        }
-        return selectedSizes.every(size => productSizes.includes(size));
-      }
-      
-      if (product.size.includes(',')) {
-        const productSizes = product.size.split(',').map(s => s.trim());
-        return productSizes.includes(selectedSize);
-      }
-      
-      if (product.size.includes('-') && product.size !== selectedSize) {
-        const [start, end] = product.size.split('-');
-        const sizeOrder = ['S', 'M', 'L', 'XL'];
-        const startIndex = sizeOrder.indexOf(start);
-        const endIndex = sizeOrder.indexOf(end);
-        const selectedIndex = sizeOrder.indexOf(selectedSize);
-        if (startIndex !== -1 && endIndex !== -1 && selectedIndex !== -1) {
-          return selectedIndex >= startIndex && selectedIndex <= endIndex;
-        }
-      }
-      
-      return false;
-    });
+    filteredProducts = filteredProducts.filter(product => matchesSizeFilter(product.size, selectedSize));
   }
   
   const onSaleCheckbox = document.querySelector('input[name="salesStatus"]:checked');
@@ -313,7 +310,9 @@ function loadTopSets() {
   const setsContainerTop = document.getElementById('top-sets-top');
   
   const sets = allProducts.filter(product => product.category === 'luggage sets');
-  const randomSets = sets.sort(() => 0.5 - Math.random()).slice(0, 5);
+  const setsCopy = [...sets];
+  const shuffled = setsCopy.sort(() => 0.5 - Math.random());
+  const randomSets = shuffled.slice(0, 5);
   
   if (randomSets.length === 0) {
     if (setsContainer) setsContainer.innerHTML = '<p>No sets available</p>';

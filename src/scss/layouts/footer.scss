@@ -110,6 +110,12 @@
 }
 
 .footer__title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 100%;
+  letter-spacing: 0;
+  color: $text-dark;
+  
   a {
     color: inherit;
     text-decoration: none;
@@ -129,14 +135,6 @@
   &:hover {
     color: $primary-color;
   }
-}
-
-.footer__title {
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 100%;
-  letter-spacing: 0;
-  color: $text-dark;
   margin-bottom: 0;
 }
 

@@ -12,9 +12,6 @@
   }
 }
 
-.header__top {
-}
-
 .header__top-content {
   @include flex-between;
   padding-top: 48px;
@@ -77,6 +74,11 @@
   display: flex;
   gap: 15px;
   align-items: center;
+  
+  @media (max-width: 768px) {
+    gap: 10px;
+    order: 1;
+  }
 }
 
 .header__icon-btn {
@@ -125,9 +127,6 @@
   line-height: 1;
   padding: 0 4px;
   box-sizing: border-box;
-}
-
-.header__nav {
 }
 
 .header__nav-list {
@@ -334,9 +333,6 @@
     order: -1;
   }
   
-  .header__actions {
-    order: 1;
-  }
   
   .header__nav {
     position: fixed;
@@ -399,9 +395,6 @@
     }
   }
   
-  .header__actions {
-    gap: 10px;
-  }
   
   .header__icon-btn {
     img {

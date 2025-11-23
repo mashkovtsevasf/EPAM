@@ -18,9 +18,7 @@ async function loadProducts() {
 
 // Get products by block name
 function getProductsByBlock(products, blockName) {
-  return products.filter(product => {
-    return product.blocks && product.blocks.includes(blockName);
-  });
+  return products.filter(product => product?.blocks?.includes(blockName));
 }
 
 function getProductImageUrl(product, basePathOverride = null) {
@@ -82,121 +80,91 @@ function renderProductCard(product) {
   `;
 }
 
+function renderProductsToGrid(grid, productsToShow) {
+  if (!grid) return;
+  grid.innerHTML = productsToShow
+    .map(product => renderProductCard(product))
+    .join('');
+  attachAddToCartListeners();
+}
+
+function renderProductsToContainer(productsToShow, grid, slider, prefix) {
+  const isDesktop = window.innerWidth > 1440;
+  
+  if (isDesktop && grid) {
+    renderProductsToGrid(grid, productsToShow);
+  } else if (slider) {
+    new ProductsSlider(slider, productsToShow, prefix);
+  } else if (grid) {
+    renderProductsToGrid(grid, productsToShow);
+  }
+}
+
+function showErrorOrEmpty(grid, slider, isEmpty) {
+  const message = isEmpty ? '<p>No products available</p>' : '<p>Error loading products.</p>';
+  if (grid) grid.innerHTML = message;
+  if (slider) slider.innerHTML = message;
+}
+
+function prepareProductsToShow(filteredProducts, allProducts, isDesktop) {
+  const sourceProducts = filteredProducts.length > 0 ? filteredProducts : allProducts;
+  if (isDesktop) {
+    return sourceProducts;
+  }
+  return sourceProducts.slice(0, 4);
+}
+
 async function loadSelectedProducts() {
+  const grid = document.querySelector('.selected-products__grid');
+  const slider = document.querySelector('.selected-products__slider');
+  
   try {
     const products = await loadProducts();
-    const grid = document.querySelector('.selected-products__grid');
-    const slider = document.querySelector('.selected-products__slider');
     
     if (products.length === 0) {
-      if (grid) {
-        grid.innerHTML = '<p>Error loading products.</p>';
-      }
-      if (slider) {
-        slider.innerHTML = '<p>Error loading products.</p>';
-      }
+      showErrorOrEmpty(grid, slider, false);
       return;
     }
     
     const selectedProducts = getProductsByBlock(products, 'Selected Products');
-    
     const isDesktop = window.innerWidth > 1440;
-    const productsToShow = selectedProducts.length > 0 
-      ? (isDesktop ? selectedProducts : selectedProducts.slice(0, 4))
-      : (isDesktop ? products : products.slice(0, 4));
+    const productsToShow = prepareProductsToShow(selectedProducts, products, isDesktop);
     
     if (productsToShow.length === 0) {
-      if (grid) {
-        grid.innerHTML = '<p>No products available</p>';
-      }
-      if (slider) {
-        slider.innerHTML = '<p>No products available</p>';
-      }
+      showErrorOrEmpty(grid, slider, true);
       return;
     }
     
-    if (isDesktop && grid) {
-      grid.innerHTML = productsToShow
-        .map(product => renderProductCard(product))
-        .join('');
-      attachAddToCartListeners();
-    } else if (slider) {
-      new ProductsSlider(slider, productsToShow, 'selected-products');
-    } else if (grid) {
-      grid.innerHTML = productsToShow
-        .map(product => renderProductCard(product))
-        .join('');
-      attachAddToCartListeners();
-    }
+    renderProductsToContainer(productsToShow, grid, slider, 'selected-products');
   } catch (error) {
-    const grid = document.querySelector('.selected-products__grid');
-    const slider = document.querySelector('.selected-products__slider');
-    if (grid) {
-      grid.innerHTML = '<p>Error loading products.</p>';
-    }
-    if (slider) {
-      slider.innerHTML = '<p>Error loading products.</p>';
-    }
+    showErrorOrEmpty(grid, slider, false);
   }
 }
 
 async function loadNewProducts() {
+  const grid = document.querySelector('.new-products__grid');
+  const slider = document.querySelector('.new-products__slider');
+  
   try {
     const products = await loadProducts();
     
     if (products.length === 0) {
-      const grid = document.querySelector('.new-products__grid');
-      const slider = document.querySelector('.new-products__slider');
-      if (grid) {
-        grid.innerHTML = '<p>Error loading products.</p>';
-      }
-      if (slider) {
-        slider.innerHTML = '<p>Error loading products.</p>';
-      }
+      showErrorOrEmpty(grid, slider, false);
       return;
     }
     
     const newProducts = getProductsByBlock(products, 'New Products Arrival');
-    const grid = document.querySelector('.new-products__grid');
-    const slider = document.querySelector('.new-products__slider');
-    
     const isDesktop = window.innerWidth > 1440;
-    const productsToShow = newProducts.length > 0 
-      ? (isDesktop ? newProducts : newProducts.slice(0, 4))
-      : (isDesktop ? products : products.slice(0, 4));
+    const productsToShow = prepareProductsToShow(newProducts, products, isDesktop);
     
     if (productsToShow.length === 0) {
-      if (grid) {
-        grid.innerHTML = '<p>No products available</p>';
-      }
-      if (slider) {
-        slider.innerHTML = '<p>No products available</p>';
-      }
+      showErrorOrEmpty(grid, slider, true);
       return;
     }
     
-    if (isDesktop && grid) {
-      grid.innerHTML = productsToShow
-        .map(product => renderProductCard(product))
-        .join('');
-      attachAddToCartListeners();
-    } else if (slider) {
-      new ProductsSlider(slider, productsToShow, 'new-products');
-    } else if (grid) {
-      grid.innerHTML = productsToShow
-        .map(product => renderProductCard(product))
-        .join('');
-      attachAddToCartListeners();
-    }
+    renderProductsToContainer(productsToShow, grid, slider, 'new-products');
   } catch (error) {
-    const grid = document.querySelector('.new-products__grid');
-    const slider = document.querySelector('.new-products__slider');
-    if (grid) {
-      grid.innerHTML = '<p>Error loading products.</p>';
-    }
-    if (slider) {
-      slider.innerHTML = '<p>Error loading products.</p>';
-    }
+    showErrorOrEmpty(grid, slider, false);
   }
 }
 
@@ -345,7 +313,9 @@ class TravelSuitcasesSlider {
       'Duis rutrum non risus in imperdiet.'
     ];
     
-    this.texts = this.texts.sort(() => Math.random() - 0.5);
+    const textsCopy = [...this.texts];
+    const shuffled = textsCopy.sort(() => Math.random() - 0.5);
+    this.texts = shuffled;
     this.init();
   }
 

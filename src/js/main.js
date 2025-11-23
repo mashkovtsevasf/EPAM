@@ -1,12 +1,13 @@
 // Layout components - Header and Footer
 
 function getBasePath() {
-  const currentPath = window.location.pathname;
-  // For pages in html/ folder, use /src/ prefix
-  if (currentPath.includes('/html/')) {
+  const path = window.location.pathname;
+  const isSubPage = path.includes('/html/');
+  const isRoot = path === '/' || path.endsWith('/index.html') || path.endsWith('/');
+  
+  if (isSubPage || isRoot) {
     return '/src/';
   }
-  // For root page (index.html), also use /src/ for assets
   return '/src/';
 }
 
