@@ -5,10 +5,16 @@ function getBasePath() {
   const isSubPage = path.includes('/html/');
   const isRoot = path === '/' || path.endsWith('/index.html') || path.endsWith('/');
   
-  if (isSubPage || isRoot) {
-    return '/src/';
+  const srcPath = '/src';
+  const slash = '/';
+  
+  if (isSubPage) {
+    return `${srcPath}${slash}`;
   }
-  return '/src/';
+  if (isRoot) {
+    return `${srcPath}${slash}`;
+  }
+  return `${srcPath}${slash}`;
 }
 
 function getCurrentPage() {

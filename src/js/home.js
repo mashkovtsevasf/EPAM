@@ -94,7 +94,7 @@ function renderProductsToContainer(productsToShow, grid, slider, prefix) {
   if (isDesktop && grid) {
     renderProductsToGrid(grid, productsToShow);
   } else if (slider) {
-    new ProductsSlider(slider, productsToShow, prefix);
+    void new ProductsSlider(slider, productsToShow, prefix);
   } else if (grid) {
     renderProductsToGrid(grid, productsToShow);
   }
@@ -314,8 +314,8 @@ class TravelSuitcasesSlider {
     ];
     
     const textsCopy = [...this.texts];
-    const shuffled = textsCopy.sort(() => Math.random() - 0.5);
-    this.texts = shuffled;
+    textsCopy.sort(() => Math.random() - 0.5);
+    this.texts = textsCopy;
     this.init();
   }
 
@@ -519,7 +519,7 @@ function initHomePage() {
     });
     
     setTimeout(() => {
-      new TravelSuitcasesSlider();
+      void new TravelSuitcasesSlider();
     }, 100);
     
     setTimeout(() => {

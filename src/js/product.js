@@ -241,11 +241,12 @@ function parseSizes(sizeString) {
 function sortSizes(sizes) {
   const sizeOrder = ['S', 'M', 'L', 'XL'];
   const sizesCopy = [...sizes];
-  return sizesCopy.sort((a, b) => {
+  sizesCopy.sort((a, b) => {
     const aIdx = sizeOrder.indexOf(a);
     const bIdx = sizeOrder.indexOf(b);
     return (aIdx === -1 ? 999 : aIdx) - (bIdx === -1 ? 999 : bIdx);
   });
+  return sizesCopy;
 }
 
 function populateSizeSelect(sizeSelect, product) {
@@ -259,7 +260,7 @@ function populateSizeSelect(sizeSelect, product) {
     const option = document.createElement('option');
     option.value = size;
     option.textContent = size;
-      if (size === product.size || (product.size && product.size.includes(size))) {
+      if (size === product.size || product.size?.includes(size)) {
       option.selected = true;
     }
     sizeSelect.appendChild(option);
@@ -334,7 +335,7 @@ function setupEventListeners(product) {
   if (addToCartBtn && product) {
     addToCartBtn.addEventListener('click', () => {
       const quantity = parseInt(quantityInput.value) || 1;
-      if (product && product.id) {
+      if (product?.id) {
         addToCart(product.id, quantity);
       } else {
         alert('Error: Product information not loaded');
@@ -728,10 +729,29 @@ async function loadRelatedProducts(currentProduct) {
   
   let allProducts = data.data.filter(p => p.id !== currentProduct.id);
   
-  const shuffled = allProducts.sort(() => 0.5 - Math.random());
-  const relatedProducts = shuffled.slice(0, 4);
+  const allProductsCopy = [...allProducts];
+  allProductsCopy.sort(() => 0.5 - Math.random());
+  const relatedProducts = allProductsCopy.slice(0, 4);
   
   renderRelatedProducts(relatedProducts);
+}
+
+function renderRelatedProductCard(product) {
+  const imageUrl = getProductImageUrl(product);
+  const saleBadge = product.salesStatus ? '<div class="product-card__tag">SALE</div>' : '';
+  return `
+    <a href="product-card.html?id=${product.id}" class="product-card" style="text-decoration: none; color: inherit;">
+      <div class="product-card__image-wrapper">
+        ${saleBadge}
+        <img src="${imageUrl}" alt="${product.name}" class="product-card__image">
+      </div>
+      <div class="product-card__content">
+        <h3 class="product-card__name">${product.name}</h3>
+        <div class="product-card__price">$${product.price}</div>
+        <button class="product-card__btn btn btn--primary" data-product-id="${product.id}" onclick="event.preventDefault(); event.stopPropagation();">Add to Cart</button>
+      </div>
+    </a>
+  `;
 }
 
 function renderRelatedProducts(products) {
@@ -742,36 +762,16 @@ function renderRelatedProducts(products) {
     return;
   }
   
-  function renderProductCard(product) {
-    const imageUrl = getProductImageUrl(product);
-    const saleBadge = product.salesStatus ? '<div class="product-card__tag">SALE</div>' : '';
-    return `
-      <a href="product-card.html?id=${product.id}" class="product-card" style="text-decoration: none; color: inherit;">
-        <div class="product-card__image-wrapper">
-          ${saleBadge}
-          <img src="${imageUrl}" alt="${product.name}" class="product-card__image">
-        </div>
-        <div class="product-card__content">
-          <h3 class="product-card__name">${product.name}</h3>
-          <div class="product-card__price">$${product.price}</div>
-          <button class="product-card__btn btn btn--primary" data-product-id="${product.id}" onclick="event.preventDefault(); event.stopPropagation();">Add to Cart</button>
-        </div>
-      </a>
-    `;
-  }
-  
   if (window.innerWidth > 1440) {
     if (relatedGrid) {
-      relatedGrid.innerHTML = products.map(product => renderProductCard(product)).join('');
+      relatedGrid.innerHTML = products.map(product => renderRelatedProductCard(product)).join('');
       relatedGrid.style.display = 'grid';
       if (relatedSlider) relatedSlider.style.display = 'none';
     }
   } else if (relatedSlider) {
-    const slider = new RelatedProductsSlider(relatedSlider, products);
-    if (slider) {
-      relatedSlider.style.display = 'block';
-      if (relatedGrid) relatedGrid.style.display = 'none';
-    }
+    void new RelatedProductsSlider(relatedSlider, products);
+    relatedSlider.style.display = 'block';
+    if (relatedGrid) relatedGrid.style.display = 'none';
   }
   
   window.relatedProductsData = products;
@@ -813,7 +813,7 @@ class RelatedProductsSlider {
   }
 
   buildSliderHTML(allProducts) {
-    const cardsHTML = allProducts.map(product => this.renderProductCard(product)).join('');
+    const cardsHTML = allProducts.map(product => renderRelatedProductCard(product)).join('');
     return `
       <div class="product-details__related-slider-wrapper">
         <button class="slider-arrow slider-arrow--left" aria-label="Previous">
@@ -835,23 +835,6 @@ class RelatedProductsSlider {
     `;
   }
 
-  renderProductCard(product) {
-    const imageUrl = getProductImageUrl(product);
-    const saleBadge = product.salesStatus ? '<div class="product-card__tag">SALE</div>' : '';
-    return `
-      <a href="product-card.html?id=${product.id}" class="product-card" style="text-decoration: none; color: inherit;">
-        <div class="product-card__image-wrapper">
-          ${saleBadge}
-          <img src="${imageUrl}" alt="${product.name}" class="product-card__image">
-        </div>
-        <div class="product-card__content">
-          <h3 class="product-card__name">${product.name}</h3>
-          <div class="product-card__price">$${product.price}</div>
-          <button class="product-card__btn btn btn--primary" data-product-id="${product.id}" onclick="event.preventDefault(); event.stopPropagation();">Add to Cart</button>
-        </div>
-      </a>
-    `;
-  }
 
   attachAddToCartListeners() {
     this.container.querySelectorAll('.product-card__btn').forEach(btn => {

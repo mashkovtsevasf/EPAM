@@ -311,7 +311,8 @@ function loadTopSets() {
   
   const sets = allProducts.filter(product => product.category === 'luggage sets');
   const setsCopy = [...sets];
-  const shuffled = setsCopy.sort(() => 0.5 - Math.random());
+  setsCopy.sort(() => 0.5 - Math.random());
+  const shuffled = setsCopy;
   const randomSets = shuffled.slice(0, 5);
   
   if (randomSets.length === 0) {
