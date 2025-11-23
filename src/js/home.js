@@ -2,7 +2,7 @@
 
 async function loadProducts() {
   try {
-    const jsonPath = 'assets/data.json';
+    const jsonPath = '/src/assets/data.json';
     const response = await fetch(jsonPath);
     
     if (!response.ok) {
@@ -85,24 +85,42 @@ function renderProductCard(product) {
 async function loadSelectedProducts() {
   try {
     const products = await loadProducts();
+    const grid = document.querySelector('.selected-products__grid');
+    const slider = document.querySelector('.selected-products__slider');
     
     if (products.length === 0) {
-      const grid = document.querySelector('.selected-products__grid');
       if (grid) {
         grid.innerHTML = '<p>Error loading products.</p>';
+      }
+      if (slider) {
+        slider.innerHTML = '<p>Error loading products.</p>';
       }
       return;
     }
     
     const selectedProducts = getProductsByBlock(products, 'Selected Products');
-    const grid = document.querySelector('.selected-products__grid');
-    const slider = document.querySelector('.selected-products__slider');
     
+    const isDesktop = window.innerWidth > 1440;
     const productsToShow = selectedProducts.length > 0 
-      ? selectedProducts.slice(0, 4)
-      : products.slice(0, 4);
+      ? (isDesktop ? selectedProducts : selectedProducts.slice(0, 4))
+      : (isDesktop ? products : products.slice(0, 4));
     
-    if (slider) {
+    if (productsToShow.length === 0) {
+      if (grid) {
+        grid.innerHTML = '<p>No products available</p>';
+      }
+      if (slider) {
+        slider.innerHTML = '<p>No products available</p>';
+      }
+      return;
+    }
+    
+    if (isDesktop && grid) {
+      grid.innerHTML = productsToShow
+        .map(product => renderProductCard(product))
+        .join('');
+      attachAddToCartListeners();
+    } else if (slider) {
       new ProductsSlider(slider, productsToShow, 'selected-products');
     } else if (grid) {
       grid.innerHTML = productsToShow
@@ -112,8 +130,12 @@ async function loadSelectedProducts() {
     }
   } catch (error) {
     const grid = document.querySelector('.selected-products__grid');
+    const slider = document.querySelector('.selected-products__slider');
     if (grid) {
       grid.innerHTML = '<p>Error loading products.</p>';
+    }
+    if (slider) {
+      slider.innerHTML = '<p>Error loading products.</p>';
     }
   }
 }
@@ -121,27 +143,60 @@ async function loadSelectedProducts() {
 async function loadNewProducts() {
   try {
     const products = await loadProducts();
+    
+    if (products.length === 0) {
+      const grid = document.querySelector('.new-products__grid');
+      const slider = document.querySelector('.new-products__slider');
+      if (grid) {
+        grid.innerHTML = '<p>Error loading products.</p>';
+      }
+      if (slider) {
+        slider.innerHTML = '<p>Error loading products.</p>';
+      }
+      return;
+    }
+    
     const newProducts = getProductsByBlock(products, 'New Products Arrival');
     const grid = document.querySelector('.new-products__grid');
     const slider = document.querySelector('.new-products__slider');
     
-    if (newProducts.length > 0) {
-      const productsToShow = newProducts.slice(0, 4);
-      
-      if (slider) {
-        new ProductsSlider(slider, productsToShow, 'new-products');
-      } else if (grid) {
-        grid.innerHTML = productsToShow
-          .map(product => renderProductCard(product))
-          .join('');
-        attachAddToCartListeners();
-      }
-    } else {
+    const isDesktop = window.innerWidth > 1440;
+    const productsToShow = newProducts.length > 0 
+      ? (isDesktop ? newProducts : newProducts.slice(0, 4))
+      : (isDesktop ? products : products.slice(0, 4));
+    
+    if (productsToShow.length === 0) {
       if (grid) {
         grid.innerHTML = '<p>No products available</p>';
       }
+      if (slider) {
+        slider.innerHTML = '<p>No products available</p>';
+      }
+      return;
+    }
+    
+    if (isDesktop && grid) {
+      grid.innerHTML = productsToShow
+        .map(product => renderProductCard(product))
+        .join('');
+      attachAddToCartListeners();
+    } else if (slider) {
+      new ProductsSlider(slider, productsToShow, 'new-products');
+    } else if (grid) {
+      grid.innerHTML = productsToShow
+        .map(product => renderProductCard(product))
+        .join('');
+      attachAddToCartListeners();
     }
   } catch (error) {
+    const grid = document.querySelector('.new-products__grid');
+    const slider = document.querySelector('.new-products__slider');
+    if (grid) {
+      grid.innerHTML = '<p>Error loading products.</p>';
+    }
+    if (slider) {
+      slider.innerHTML = '<p>Error loading products.</p>';
+    }
   }
 }
 
@@ -156,7 +211,12 @@ class ProductsSlider {
   }
 
   init() {
-    if (!this.container || this.products.length === 0) return;
+    if (!this.container) return;
+    
+    if (this.products.length === 0) {
+      this.container.innerHTML = '';
+      return;
+    }
     
     const allProducts = [...this.products, ...this.products, ...this.products];
     this.currentIndex = this.products.length;
@@ -170,7 +230,7 @@ class ProductsSlider {
         </button>
         <div class="${this.prefix}__slider-container">
           <div class="${this.prefix}__slider-track">
-            ${allProducts.map((product, index) => renderProductCard(product)).join('')}
+            ${allProducts.map((product) => renderProductCard(product)).join('')}
           </div>
         </div>
         <button class="slider-arrow slider-arrow--right" aria-label="Next">
@@ -268,12 +328,12 @@ class ProductsSlider {
 class TravelSuitcasesSlider {
   constructor() {
     this.currentIndex = 0;
-      this.images = [
-        'assets/images/suitcases/travel-suitcase-real-1.png',
-        'assets/images/suitcases/travel-suitcase-real-2.png',
-        'assets/images/suitcases/travel-suitcase-real-3.png',
-        'assets/images/suitcases/travel-suitcase-real-4.png'
-      ];
+    this.images = [
+      '/src/assets/images/suitcases/travel-suitcase-real-1.png',
+      '/src/assets/images/suitcases/travel-suitcase-real-2.png',
+      '/src/assets/images/suitcases/travel-suitcase-real-3.png',
+      '/src/assets/images/suitcases/travel-suitcase-real-4.png'
+    ];
     this.texts = [
       'Duis vestibulum elit vel neque.',
       'Neque vestibulum elit nequvel.',
@@ -291,7 +351,10 @@ class TravelSuitcasesSlider {
 
   init() {
     const sliderContainer = document.querySelector('.travel-suitcases__slider');
-    if (!sliderContainer) return;
+    if (!sliderContainer) {
+      setTimeout(() => this.init(), 100);
+      return;
+    }
 
     const allImages = [...this.images, ...this.images, ...this.images];
     const allTexts = [...this.texts, ...this.texts, ...this.texts];
@@ -398,35 +461,32 @@ class TravelSuitcasesSlider {
 
 // Cart actions
 async function addToCart(productId) {
-  try {
-    if (!productId) {
-      return;
-    }
-    
-    const basePath = getBasePath();
-    const jsonPath = `${basePath}assets/data.json`;
-    const response = await fetch(jsonPath);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    const product = data.data.find(item => item.id === productId);
-    
-    if (!product) {
-      return;
-    }
-    
-    const imageUrl = getProductImageUrl(product);
-    
-    addItemToCart(productId, 1, {
-      name: product.name,
-      price: product.price,
-      image: imageUrl,
-      size: '',
-      color: product.color || ''
-    });
-  } catch (error) {
+  if (!productId) {
+    return;
   }
+  
+  const basePath = getBasePath();
+  const jsonPath = `${basePath}assets/data.json`;
+  const response = await fetch(jsonPath);
+  if (!response.ok) {
+    return;
+  }
+  const data = await response.json();
+  const product = data.data.find(item => item.id === productId);
+  
+  if (!product) {
+    return;
+  }
+  
+  const imageUrl = getProductImageUrl(product);
+  
+  addItemToCart(productId, 1, {
+    name: product.name,
+    price: product.price,
+    image: imageUrl,
+    size: '',
+    color: product.color || ''
+  });
 }
 
 function attachAddToCartListeners() {
@@ -454,8 +514,33 @@ function attachAddToCartListeners() {
   document.addEventListener('click', window.addToCartHandler);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  if (getCurrentPage() === 'home') {
+let resizeTimeout;
+function handleResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    if (getCurrentPage() === 'home') {
+      loadSelectedProducts().then(() => {
+        attachAddToCartListeners();
+      });
+      loadNewProducts().then(() => {
+        attachAddToCartListeners();
+      });
+    }
+  }, 250);
+}
+
+function initHomePage() {
+  if (getCurrentPage() !== 'home') return;
+  
+  const checkAndLoad = () => {
+    const selectedSection = document.querySelector('.selected-products');
+    const newSection = document.querySelector('.new-products');
+    
+    if (!selectedSection || !newSection) {
+      setTimeout(checkAndLoad, 100);
+      return;
+    }
+    
     loadSelectedProducts().then(() => {
       attachAddToCartListeners();
     });
@@ -463,11 +548,27 @@ document.addEventListener('DOMContentLoaded', () => {
       attachAddToCartListeners();
     });
     
-    new TravelSuitcasesSlider();
+    setTimeout(() => {
+      new TravelSuitcasesSlider();
+    }, 100);
     
     setTimeout(() => {
       attachAddToCartListeners();
     }, 500);
-  }
+  };
+  
+  checkAndLoad();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initHomePage();
 });
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHomePage);
+} else {
+  initHomePage();
+}
+
+window.addEventListener('resize', handleResize);
 

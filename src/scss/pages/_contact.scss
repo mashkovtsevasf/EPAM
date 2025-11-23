@@ -83,6 +83,7 @@
     height: 100%;
     object-fit: contain;
     padding: 12px;
+    display: block;
   }
 }
 
@@ -177,9 +178,8 @@
 .contact-feedback__input,
 .contact-feedback__textarea {
   padding: 12px 15px;
-  border: 2px solid rgba(185, 39, 112, 0.5);
+  border: 2px solid rgb(185 39 112 / 50%);
   border-radius: 0;
-  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 100%;
@@ -209,7 +209,6 @@
 .contact-feedback__error {
   display: block;
   margin-top: 5px;
-  font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 100%;
@@ -225,7 +224,6 @@
   right: 0;
   margin-top: 15px;
   padding: 12px 20px;
-  font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 140%;

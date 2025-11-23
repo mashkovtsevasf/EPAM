@@ -66,7 +66,6 @@ function updateCartSummary() {
   const shipping = 30;
   
   const discountThreshold = 3000;
-  const discountPercent = subtotal > discountThreshold ? 10 : 0;
   const discount = subtotal > discountThreshold ? subtotal * 0.1 : 0;
   const total = subtotal - discount + shipping;
   

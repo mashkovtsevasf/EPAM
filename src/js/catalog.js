@@ -92,7 +92,6 @@ function applyFilters() {
   const selectedCategory = categorySelect?.value || '';
   const selectedColor = colorSelect?.value || '';
   const selectedSize = sizeSelect?.value || '';
-  const onSale = document.querySelector('input[name="salesStatus"]:checked');
   
   if (categorySelect) {
     categorySelect.classList.toggle('catalog__filter-select--active', selectedCategory !== '');
@@ -474,35 +473,32 @@ function handleSearch() {
 
 // Cart actions
 async function addToCart(productId) {
-  try {
-    if (!productId) {
-      return;
-    }
-    
-    const basePath = getBasePath();
-    const jsonPath = `${basePath}assets/data.json`;
-    const response = await fetch(jsonPath);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    const product = data.data.find(item => item.id === productId);
-    
-    if (!product) {
-      return;
-    }
-    
-    const imageUrl = getProductImageUrl(product, basePath);
-    
-    addItemToCart(productId, 1, {
-      name: product.name,
-      price: product.price,
-      image: imageUrl,
-      size: '',
-      color: product.color || ''
-    });
-  } catch (error) {
+  if (!productId) {
+    return;
   }
+  
+  const basePath = getBasePath();
+  const jsonPath = `${basePath}assets/data.json`;
+  const response = await fetch(jsonPath);
+  if (!response.ok) {
+    return;
+  }
+  const data = await response.json();
+  const product = data.data.find(item => item.id === productId);
+  
+  if (!product) {
+    return;
+  }
+  
+  const imageUrl = getProductImageUrl(product, basePath);
+  
+  addItemToCart(productId, 1, {
+    name: product.name,
+    price: product.price,
+    image: imageUrl,
+    size: '',
+    color: product.color || ''
+  });
 }
 
 async function initCatalog() {

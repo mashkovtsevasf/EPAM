@@ -4,8 +4,8 @@ Multi-page e-commerce website built with HTML, SCSS, and JavaScript.
 
 Prerequisites
 
-Node.js (v14 or higher)
-npm (v6 or higher)
+Node.js
+npm
 
 Setup and Run
 
@@ -16,7 +16,8 @@ Setup and Run
    npm run dev
 
    This command will:
-   - Compile SCSS to CSS
+   - Run linting checks (ESLint for JavaScript, Stylelint for SCSS)
+   - Compile SCSS to CSS (compiled CSS files are placed in dist/css folder)
    - Watch for SCSS file changes and automatically recompile
    - Start a local HTTP server on port 5050
    - Open the website in your default browser
@@ -33,7 +34,6 @@ Features
 
 Development
 
-- SCSS files are automatically compiled to CSS when changes are detected
 - The development server runs on http://localhost:5050
 - Main entry point: src/index.html
 
@@ -41,3 +41,9 @@ Build
 
 To compile SCSS without watching:
 npm run compile
+
+Linting
+
+Linting runs automatically when you start the development server with npm run dev. The linting process checks JavaScript and SCSS files before compiling and starting the server.
+
+

@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+@import 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
 * {
   margin: 0;
   padding: 0;
@@ -12,7 +12,7 @@ html {
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: Montserrat, sans-serif;
   line-height: 1.6;
   color: #000;
   background-color: #fff;
@@ -93,7 +93,7 @@ button {
 .login-modal__content {
   position: relative;
   background: white;
-  padding: 46px 70px 47px 70px;
+  padding: 46px 70px 47px;
   border-radius: 0;
   max-width: 480px;
   width: 90%;
@@ -119,7 +119,7 @@ button {
   font-size: 14px;
   line-height: 100%;
   letter-spacing: 0%;
-  color: #000000;
+  color: #000;
 }
 
 .login-modal__required {
@@ -132,7 +132,6 @@ button {
   padding: 12px 15px;
   border: 2px solid rgba(185, 39, 112, 0.5);
   border-radius: 0;
-  font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 100%;
@@ -1299,7 +1298,6 @@ a.footer__contact-text:hover {
 }
 
 .cart__empty-message {
-  font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 17px;
   line-height: 150%;
@@ -1471,7 +1469,7 @@ a.footer__contact-text:hover {
 
 .cart__summary {
   background: #504E4A;
-  padding: 59px 42px 42px 42px;
+  padding: 59px 42px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1677,6 +1675,7 @@ a.footer__contact-text:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 5px;
   margin-bottom: 30px;
 }
 
@@ -1922,7 +1921,7 @@ a.footer__contact-text:hover {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #000000;
+  background: #000;
 }
 .catalog__filter-checkbox span {
   user-select: none;
@@ -2365,6 +2364,7 @@ a.footer__contact-text:hover {
   height: 100%;
   object-fit: contain;
   padding: 12px;
+  display: block;
 }
 
 .contact-info__title {
@@ -2457,7 +2457,6 @@ a.footer__contact-text:hover {
   padding: 12px 15px;
   border: 2px solid rgba(185, 39, 112, 0.5);
   border-radius: 0;
-  font-family: "Montserrat", sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 100%;
@@ -2487,7 +2486,6 @@ a.footer__contact-text:hover {
 .contact-feedback__error {
   display: block;
   margin-top: 5px;
-  font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 12px;
   line-height: 100%;
@@ -2503,7 +2501,6 @@ a.footer__contact-text:hover {
   right: 0;
   margin-top: 15px;
   padding: 12px 20px;
-  font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 140%;
@@ -3380,7 +3377,7 @@ a.footer__contact-text:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 50px;
-  background: #FFFFFF;
+  background: #fff;
   box-shadow: 0px 20px 80px 0px rgba(193, 199, 212, 0.7);
 }
 
@@ -3977,6 +3974,19 @@ a.footer__contact-text:hover {
   color: #B92770;
 }
 
+@media (min-width: 1441px) {
+  .selected-products__grid,
+  .new-products__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-between;
+  }
+  .selected-products__slider,
+  .new-products__slider {
+    display: none;
+  }
+}
 @media (max-width: 1440px) {
   .main-banner__image img {
     width: 600px !important;

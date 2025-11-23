@@ -2,10 +2,12 @@
 
 function getBasePath() {
   const currentPath = window.location.pathname;
+  // For pages in html/ folder, use /src/ prefix
   if (currentPath.includes('/html/')) {
-    return '../';
+    return '/src/';
   }
-  return '';
+  // For root page (index.html), also use /src/ for assets
+  return '/src/';
 }
 
 function getCurrentPage() {
@@ -352,8 +354,6 @@ function initBurgerMenu() {
 
 // Login modal
 function loadLoginModal() {
-  const basePath = getBasePath();
-  
   const modalHTML = `
     <div class="login-modal" id="login-modal" style="display: none;">
       <div class="login-modal__overlay"></div>

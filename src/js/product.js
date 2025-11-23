@@ -56,8 +56,6 @@ function renderProductDetails(product) {
   if (!product) {
     return;
   }
-
-  const basePath = getBasePath();
   
   const mainImage = document.getElementById('product-main-image');
   if (mainImage) {
@@ -704,23 +702,20 @@ async function addToCart(productId, quantity) {
 
 // Related products
 async function loadRelatedProducts(currentProduct) {
-  try {
-    const basePath = getBasePath();
-    const jsonPath = `${basePath}assets/data.json`;
-    const response = await fetch(jsonPath);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    
-    let allProducts = data.data.filter(p => p.id !== currentProduct.id);
-    
-    const shuffled = allProducts.sort(() => 0.5 - Math.random());
-    const relatedProducts = shuffled.slice(0, 4);
-    
-    renderRelatedProducts(relatedProducts);
-  } catch (error) {
+  const basePath = getBasePath();
+  const jsonPath = `${basePath}assets/data.json`;
+  const response = await fetch(jsonPath);
+  if (!response.ok) {
+    return;
   }
+  const data = await response.json();
+  
+  let allProducts = data.data.filter(p => p.id !== currentProduct.id);
+  
+  const shuffled = allProducts.sort(() => 0.5 - Math.random());
+  const relatedProducts = shuffled.slice(0, 4);
+  
+  renderRelatedProducts(relatedProducts);
 }
 
 function renderRelatedProducts(products) {
@@ -730,8 +725,6 @@ function renderRelatedProducts(products) {
   if (!relatedGrid && !relatedSlider) {
     return;
   }
-
-  const basePath = getBasePath();
   
   function renderProductCard(product) {
     const imageUrl = getProductImageUrl(product);
@@ -796,8 +789,6 @@ class RelatedProductsSlider {
     
     const allProducts = [...this.products, ...this.products, ...this.products];
     this.currentIndex = this.products.length;
-    
-    const basePath = getBasePath();
     
     function renderProductCard(product) {
       const imageUrl = getProductImageUrl(product);
