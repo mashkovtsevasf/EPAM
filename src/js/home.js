@@ -94,7 +94,7 @@ function renderProductsToContainer(productsToShow, grid, slider, prefix) {
   if (isDesktop && grid) {
     renderProductsToGrid(grid, productsToShow);
   } else if (slider) {
-    void new ProductsSlider(slider, productsToShow, prefix);
+    new ProductsSlider(slider, productsToShow, prefix);
   } else if (grid) {
     renderProductsToGrid(grid, productsToShow);
   }
@@ -519,7 +519,7 @@ function initHomePage() {
     });
     
     setTimeout(() => {
-      void new TravelSuitcasesSlider();
+      new TravelSuitcasesSlider();
     }, 100);
     
     setTimeout(() => {

@@ -769,7 +769,7 @@ function renderRelatedProducts(products) {
       if (relatedSlider) relatedSlider.style.display = 'none';
     }
   } else if (relatedSlider) {
-    void new RelatedProductsSlider(relatedSlider, products);
+    new RelatedProductsSlider(relatedSlider, products);
     relatedSlider.style.display = 'block';
     if (relatedGrid) relatedGrid.style.display = 'none';
   }
