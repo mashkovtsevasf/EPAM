@@ -334,9 +334,11 @@ function setupEventListeners(product) {
   const addToCartBtn = document.getElementById('add-to-cart-btn');
   if (addToCartBtn && product) {
     addToCartBtn.addEventListener('click', () => {
+      console.log('addToCartBtn clicked');
       const quantity = parseInt(quantityInput.value) || 1;
       if (product?.id) {
-        addToCart(product.id, quantity);
+        window.location.href = `https://youtryme.myshopify.com/cart/${product.id}:1`;
+        // addToCart(product.id, quantity);
       } else {
         alert('Error: Product information not loaded');
       }
