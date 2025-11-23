@@ -769,9 +769,11 @@ function renderRelatedProducts(products) {
       if (relatedSlider) relatedSlider.style.display = 'none';
     }
   } else if (relatedSlider) {
-    new RelatedProductsSlider(relatedSlider, products);
-    relatedSlider.style.display = 'block';
-    if (relatedGrid) relatedGrid.style.display = 'none';
+    const sliderInstance = new RelatedProductsSlider(relatedSlider, products);
+    if (sliderInstance) {
+      relatedSlider.style.display = 'block';
+      if (relatedGrid) relatedGrid.style.display = 'none';
+    }
   }
   
   window.relatedProductsData = products;
